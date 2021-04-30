@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <config_wasm_strip.h>
+
 #include <hintids.hxx>
 #include <osl/diagnose.h>
 #include <sfx2/linkmgr.hxx>
@@ -1115,6 +1117,7 @@ void SwSectionNode::MakeFramesForAdjacentContentNode(const SwNodeIndex & rIdx)
                 // CONTENT_FLOWS_FROM/_TO relation.
                 // Relation CONTENT_FLOWS_FROM for next paragraph will change
                 // and relation CONTENT_FLOWS_TO for previous paragraph will change.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
                 if ( pNew->IsTextFrame() )
                 {
                     SwViewShell* pViewShell( pNew->getRootFrame()->GetCurrShell() );
@@ -1126,6 +1129,7 @@ void SwSectionNode::MakeFramesForAdjacentContentNode(const SwNodeIndex & rIdx)
                             dynamic_cast<SwTextFrame*>(pNew->FindPrevCnt()) );
                     }
                 }
+#endif
                 pNew = pSct;
             }
 
@@ -1141,6 +1145,7 @@ void SwSectionNode::MakeFramesForAdjacentContentNode(const SwNodeIndex & rIdx)
             // CONTENT_FLOWS_FROM/_TO relation.
             // Relation CONTENT_FLOWS_FROM for next paragraph will change
             // and relation CONTENT_FLOWS_TO for previous paragraph will change.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
             if ( pNew->IsTextFrame() )
             {
                 SwViewShell* pViewShell( pNew->getRootFrame()->GetCurrShell() );
@@ -1152,6 +1157,7 @@ void SwSectionNode::MakeFramesForAdjacentContentNode(const SwNodeIndex & rIdx)
                         dynamic_cast<SwTextFrame*>(pNew->FindPrevCnt()) );
                 }
             }
+#endif
             if ( bInitNewSect )
                 static_cast<SwSectionFrame*>(pNew)->Init();
         }

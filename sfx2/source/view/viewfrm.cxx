@@ -18,6 +18,8 @@
  */
 
 #include <config_feature_desktop.h>
+#include <config_wasm_strip.h>
+
 #include <osl/file.hxx>
 #include <sfx2/docfilt.hxx>
 #include <sfx2/infobar.hxx>
@@ -1357,8 +1359,8 @@ void SfxViewFrame::Notify( SfxBroadcaster& /*rBC*/, const SfxHint& rHint )
                 rBind.Invalidate( SID_RELOAD );
                 rBind.Invalidate( SID_EDITDOC );
 
+#ifndef ENABLE_WASM_STRIP_PINGUSER
                 const auto t0 = std::chrono::system_clock::now().time_since_epoch();
-
                 bool bIsUITest = false; //uitest.uicheck fails when the dialog is open
                 for( sal_uInt16 i = 0; i < Application::GetCommandLineParamCount(); i++ )
                 {
@@ -1455,6 +1457,7 @@ void SfxViewFrame::Notify( SfxBroadcaster& /*rBC*/, const SfxHint& rHint )
                     officecfg::Setup::Product::LastTimeDonateShown::set(nNow, batch);
                     batch->commit();
                 }
+#endif
 
                 // read-only infobar if necessary
                 const SfxViewShell *pVSh;
@@ -1598,6 +1601,7 @@ void SfxViewFrame::Notify( SfxBroadcaster& /*rBC*/, const SfxHint& rHint )
     }
 }
 
+#ifndef ENABLE_WASM_STRIP_PINGUSER
 IMPL_LINK_NOARG(SfxViewFrame, WhatsNewHandler, weld::Button&, void)
 {
     GetDispatcher()->Execute(SID_WHATSNEW);
@@ -1612,6 +1616,7 @@ IMPL_LINK_NOARG(SfxViewFrame, DonationHandler, weld::Button&, void)
 {
     GetDispatcher()->Execute(SID_DONATION);
 }
+#endif
 
 IMPL_LINK(SfxViewFrame, SwitchReadOnlyHandler, weld::Button&, rButton, void)
 {

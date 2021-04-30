@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <config_wasm_strip.h>
+
 #include <pagefrm.hxx>
 #include <rootfrm.hxx>
 #include <cntfrm.hxx>
@@ -847,6 +849,7 @@ void SwPageFrame::AppendFlyToPage( SwFlyFrame *pNew )
         // Notify accessible layout. That's required at this place for
         // frames only where the anchor is moved. Creation of new frames
         // is additionally handled by the SwFrameNotify class.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
         if( GetUpper() &&
             static_cast< SwRootFrame * >( GetUpper() )->IsAnyShellAccessible() &&
              static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell() )
@@ -854,6 +857,7 @@ void SwPageFrame::AppendFlyToPage( SwFlyFrame *pNew )
             static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell()->Imp()
                                       ->AddAccessibleFrame( pNew );
         }
+#endif
     }
 
     // #i28701# - correction: consider also drawing objects
@@ -920,6 +924,7 @@ void SwPageFrame::RemoveFlyFromPage( SwFlyFrame *pToRemove )
     // Notify accessible layout. That's required at this place for
     // frames only where the anchor is moved. Creation of new frames
     // is additionally handled by the SwFrameNotify class.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     if( GetUpper() &&
         static_cast< SwRootFrame * >( GetUpper() )->IsAnyShellAccessible() &&
         static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell() )
@@ -927,6 +932,7 @@ void SwPageFrame::RemoveFlyFromPage( SwFlyFrame *pToRemove )
         static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell()->Imp()
                                   ->DisposeAccessibleFrame( pToRemove, true );
     }
+#endif
 
     // #i28701# - use new method <SetPageFrame(..)>
     pToRemove->SetPageFrame( nullptr );
@@ -956,6 +962,7 @@ void SwPageFrame::MoveFly( SwFlyFrame *pToMove, SwPageFrame *pDest )
     // Notify accessible layout. That's required at this place for
     // frames only where the anchor is moved. Creation of new frames
     // is additionally handled by the SwFrameNotify class.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     if( GetUpper() &&
         static_cast< SwRootFrame * >( GetUpper() )->IsAnyShellAccessible() &&
         static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell() )
@@ -963,6 +970,7 @@ void SwPageFrame::MoveFly( SwFlyFrame *pToMove, SwPageFrame *pDest )
         static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell()->Imp()
                                   ->DisposeAccessibleFrame( pToMove, true );
     }
+#endif
 
     // The FlyColl might be gone already, because the page's dtor is being executed.
     if ( m_pSortedObjs )
@@ -992,6 +1000,7 @@ void SwPageFrame::MoveFly( SwFlyFrame *pToMove, SwPageFrame *pDest )
     // Notify accessible layout. That's required at this place for
     // frames only where the anchor is moved. Creation of new frames
     // is additionally handled by the SwFrameNotify class.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     if( GetUpper() &&
         static_cast< SwRootFrame * >( GetUpper() )->IsAnyShellAccessible() &&
         static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell() )
@@ -999,6 +1008,7 @@ void SwPageFrame::MoveFly( SwFlyFrame *pToMove, SwPageFrame *pDest )
         static_cast< SwRootFrame * >( GetUpper() )->GetCurrShell()->Imp()
                                   ->AddAccessibleFrame( pToMove );
     }
+#endif
 
     // #i28701# - correction: move lowers of Writer fly frame
     if ( !pToMove->GetDrawObjs() )

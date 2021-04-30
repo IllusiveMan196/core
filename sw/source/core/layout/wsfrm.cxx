@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <config_wasm_strip.h>
+
 #include <hints.hxx>
 #include <osl/diagnose.h>
 #include <o3tl/safeint.hxx>
@@ -2778,6 +2780,7 @@ SwTwips SwLayoutFrame::GrowFrame( SwTwips nDist, bool bTst, bool bInfo )
         }
     }
 
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     if( bMoveAccFrame && IsAccessibleFrame() )
     {
         SwRootFrame *pRootFrame = getRootFrame();
@@ -2787,6 +2790,11 @@ SwTwips SwLayoutFrame::GrowFrame( SwTwips nDist, bool bTst, bool bInfo )
             pRootFrame->GetCurrShell()->Imp()->MoveAccessibleFrame( this, aOldFrame );
         }
     }
+#else
+    (void)bMoveAccFrame;
+    (void)aOldFrame;
+#endif
+
     return nReal;
 }
 
@@ -2919,6 +2927,7 @@ SwTwips SwLayoutFrame::ShrinkFrame( SwTwips nDist, bool bTst, bool bInfo )
             AdjustNeighbourhood( nReal - nShrink );
     }
 
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     if( bMoveAccFrame && IsAccessibleFrame() )
     {
         SwRootFrame *pRootFrame = getRootFrame();
@@ -2928,6 +2937,11 @@ SwTwips SwLayoutFrame::ShrinkFrame( SwTwips nDist, bool bTst, bool bInfo )
             pRootFrame->GetCurrShell()->Imp()->MoveAccessibleFrame( this, aOldFrame );
         }
     }
+#else
+    (void)aOldFrame;
+    (void)bMoveAccFrame;
+#endif
+
     if ( !bTst && (IsCellFrame() || IsColumnFrame() ? nReal : nRealDist) )
     {
         SwPageFrame *pPage = FindPageFrame();

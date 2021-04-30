@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <config_wasm_strip.h>
+
 #include <hintids.hxx>
 #include <svx/svdpage.hxx>
 #include <svx/svdpagv.hxx>
@@ -373,6 +375,7 @@ void SwDrawView::MoveRepeatedObjs( const SwAnchoredObject& _rMovedAnchoredObj,
                                         nNewPos );
             pDrawPage->RecalcObjOrdNums();
             // adjustments for accessibility API
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
             if ( auto pTmpFlyFrame = dynamic_cast<SwFlyFrame *>( pAnchoredObj ) )
             {
                 m_rImp.DisposeAccessibleFrame( pTmpFlyFrame );
@@ -383,6 +386,7 @@ void SwDrawView::MoveRepeatedObjs( const SwAnchoredObject& _rMovedAnchoredObj,
                 m_rImp.DisposeAccessibleObj(pAnchoredObj->GetDrawObj(), true);
                 m_rImp.AddAccessibleObj( pAnchoredObj->GetDrawObj() );
             }
+#endif
         }
         aAnchoredObjs.pop_back();
     }
@@ -406,6 +410,7 @@ void SwDrawView::MoveRepeatedObjs( const SwAnchoredObject& _rMovedAnchoredObj,
                                             nTmpNewPos );
                 pDrawPage->RecalcObjOrdNums();
                 // adjustments for accessibility API
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
                 if ( auto pTmpFlyFrame = dynamic_cast<SwFlyFrame *>( pAnchoredObj ) )
                 {
                     m_rImp.DisposeAccessibleFrame( pTmpFlyFrame );
@@ -416,6 +421,7 @@ void SwDrawView::MoveRepeatedObjs( const SwAnchoredObject& _rMovedAnchoredObj,
                     m_rImp.DisposeAccessibleObj(pAnchoredObj->GetDrawObj(), true);
                     m_rImp.AddAccessibleObj( pAnchoredObj->GetDrawObj() );
                 }
+#endif
             }
             aAnchoredObjs.pop_back();
         }
@@ -583,8 +589,10 @@ void SwDrawView::ObjOrderChanged( SdrObject* pObj, size_t nOldPos,
     if ( auto pFlyFrame = dynamic_cast< SwFlyFrame *>( pMovedAnchoredObj ) )
     {
         // adjustments for accessibility API
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
         m_rImp.DisposeAccessibleFrame( pFlyFrame );
         m_rImp.AddAccessibleFrame( pFlyFrame );
+#endif
 
         const sal_uInt32 nChildNewPos = bMovedForward ? nNewPos : nNewPos+1;
         size_t i = bMovedForward ? nOldPos : nObjCount-1;
@@ -611,6 +619,7 @@ void SwDrawView::ObjOrderChanged( SdrObject* pObj, size_t nOldPos,
                 // collect 'child' object
                 aMovedChildObjs.push_back( pTmpObj );
                 // adjustments for accessibility API
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
                 if ( auto pFlyDrawObj = dynamic_cast<SwVirtFlyDrawObj *>( pTmpObj ) )
                 {
                     const SwFlyFrame *pTmpFlyFrame = pFlyDrawObj->GetFlyFrame();
@@ -622,6 +631,7 @@ void SwDrawView::ObjOrderChanged( SdrObject* pObj, size_t nOldPos,
                     m_rImp.DisposeAccessibleObj(pTmpObj, true);
                     m_rImp.AddAccessibleObj( pTmpObj );
                 }
+#endif
             }
             else
             {
@@ -635,12 +645,14 @@ void SwDrawView::ObjOrderChanged( SdrObject* pObj, size_t nOldPos,
         } while ( ( bMovedForward && i < ( nObjCount - aMovedChildObjs.size() ) ) ||
                   ( !bMovedForward && i > ( nNewPos + aMovedChildObjs.size() ) ) );
     }
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     else
     {
         // adjustments for accessibility API
         m_rImp.DisposeAccessibleObj(pObj, true);
         m_rImp.AddAccessibleObj( pObj );
     }
+#endif
 
     MoveRepeatedObjs( *pMovedAnchoredObj, aMovedChildObjs );
 }

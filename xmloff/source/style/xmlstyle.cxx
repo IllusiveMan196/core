@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <config_wasm_strip.h>
+
 #include <sal/config.h>
 
 #include <com/sun/star/frame/XModel.hpp>
@@ -423,10 +425,12 @@ SvXMLStyleContext *SvXMLStylesContext::CreateStyleStyleChildContext(
         case XmlStyleFamily::TEXT_RUBY:
             pStyle = new XMLPropStyleContext( GetImport(), *this, nFamily );
             break;
+#ifndef ENABLE_WASM_STRIP_CHART
+        // WASM_CHART change
         case XmlStyleFamily::SCH_CHART_ID:
             pStyle = new XMLChartStyleContext( GetImport(), *this, nFamily );
             break;
-
+#endif
         case XmlStyleFamily::SD_GRAPHICS_ID:
         case XmlStyleFamily::SD_PRESENTATION_ID:
         case XmlStyleFamily::SD_POOL_ID:
@@ -562,6 +566,8 @@ rtl::Reference < SvXMLImportPropertyMapper > SvXMLStylesContext::GetImportProper
         }
         xMapper = mxShapeImpPropMapper;
         break;
+#ifndef ENABLE_WASM_STRIP_CHART
+    // WASM_CHART change
     case XmlStyleFamily::SCH_CHART_ID:
         if( ! mxChartImpPropMapper.is() )
         {
@@ -570,6 +576,7 @@ rtl::Reference < SvXMLImportPropertyMapper > SvXMLStylesContext::GetImportProper
         }
         xMapper = mxChartImpPropMapper;
         break;
+#endif
     case XmlStyleFamily::PAGE_MASTER:
         if( ! mxPageImpPropMapper.is() )
         {

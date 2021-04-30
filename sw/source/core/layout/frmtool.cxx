@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <config_wasm_strip.h>
+
 #include <svx/svdpage.hxx>
 #include <editeng/brushitem.hxx>
 #include <editeng/shaditem.hxx>
@@ -240,6 +242,7 @@ SwFrameNotify::~SwFrameNotify() COVERITY_NOEXCEPT_FALSE
     if ( bAbsP || bPrtP || bChgWidth || bChgHeight ||
          bPrtWidth || bPrtHeight || bChgFlyBasePos )
     {
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
         if( mpFrame->IsAccessibleFrame() )
         {
             SwRootFrame *pRootFrame = mpFrame->getRootFrame();
@@ -249,6 +252,7 @@ SwFrameNotify::~SwFrameNotify() COVERITY_NOEXCEPT_FALSE
                 pRootFrame->GetCurrShell()->Imp()->MoveAccessibleFrame( mpFrame, maFrame );
             }
         }
+#endif
 
         // Notification of anchored objects
         if ( mpFrame->GetDrawObjs() )
@@ -368,6 +372,7 @@ SwFrameNotify::~SwFrameNotify() COVERITY_NOEXCEPT_FALSE
             }
         }
     }
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
     else if( mpFrame->IsTextFrame() && mbValidSize != mpFrame->isFrameAreaSizeValid() )
     {
         SwRootFrame *pRootFrame = mpFrame->getRootFrame();
@@ -377,6 +382,7 @@ SwFrameNotify::~SwFrameNotify() COVERITY_NOEXCEPT_FALSE
             pRootFrame->GetCurrShell()->Imp()->InvalidateAccessibleFrameContent( mpFrame );
         }
     }
+#endif
 
     // #i9046# Automatic frame width
     SwFlyFrame* pFly = nullptr;
@@ -1560,6 +1566,7 @@ void InsertCnt_( SwLayoutFrame *pLay, SwDoc *pDoc,
             // CONTENT_FLOWS_FROM/_TO relation.
             // Relation CONTENT_FLOWS_FROM for next paragraph will change
             // and relation CONTENT_FLOWS_TO for previous paragraph will change.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
             if ( pFrame->IsTextFrame() )
             {
                 SwViewShell* pViewShell( pFrame->getRootFrame()->GetCurrShell() );
@@ -1581,6 +1588,7 @@ void InsertCnt_( SwLayoutFrame *pLay, SwDoc *pDoc,
                     pFrame->InvalidateInfFlags();
                 }
             }
+#endif
             // OD 12.08.2003 #i17969# - consider horizontal/vertical layout
             // for setting position at newly inserted frame
             lcl_SetPos( *pFrame, *pLay );
@@ -1647,6 +1655,7 @@ void InsertCnt_( SwLayoutFrame *pLay, SwDoc *pDoc,
             // CONTENT_FLOWS_FROM/_TO relation.
             // Relation CONTENT_FLOWS_FROM for next paragraph will change
             // and relation CONTENT_FLOWS_TO for previous paragraph will change.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
             {
                 SwViewShell* pViewShell( pFrame->getRootFrame()->GetCurrShell() );
                 // no notification, if <SwViewShell> is in construction
@@ -1660,6 +1669,7 @@ void InsertCnt_( SwLayoutFrame *pLay, SwDoc *pDoc,
                             dynamic_cast<SwTextFrame*>(pFrame->FindPrevCnt()) );
                 }
             }
+#endif
             if ( bObjsDirect && !pTable->empty() )
                 static_cast<SwTabFrame*>(pFrame)->RegistFlys();
             // OD 12.08.2003 #i17969# - consider horizontal/vertical layout
@@ -1759,6 +1769,7 @@ void InsertCnt_( SwLayoutFrame *pLay, SwDoc *pDoc,
                 // CONTENT_FLOWS_FROM/_TO relation.
                 // Relation CONTENT_FLOWS_FROM for next paragraph will change
                 // and relation CONTENT_FLOWS_TO for previous paragraph will change.
+#ifndef ENABLE_WASM_STRIP_ACCESSIBILITY
                 {
                     SwViewShell* pViewShell( pFrame->getRootFrame()->GetCurrShell() );
                     // no notification, if <SwViewShell> is in construction
@@ -1772,6 +1783,7 @@ void InsertCnt_( SwLayoutFrame *pLay, SwDoc *pDoc,
                             dynamic_cast<SwTextFrame*>(pFrame->FindPrevCnt()) );
                     }
                 }
+#endif
                 pFrame->CheckDirChange();
 
                 // OD 12.08.2003 #i17969# - consider horizontal/vertical layout

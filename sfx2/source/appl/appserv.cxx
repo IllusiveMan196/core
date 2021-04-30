@@ -18,6 +18,8 @@
  */
 
 #include <config_features.h>
+#include <config_wasm_strip.h>
+
 #include <com/sun/star/drawing/ModuleDispatcher.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
 #include <com/sun/star/frame/DispatchResultEvent.hpp>
@@ -505,6 +507,7 @@ void SfxApplication::MiscExec_Impl( SfxRequest& rReq )
             sfx2::openUriExternally(sURL, false);
             break;
         }
+#ifndef ENABLE_WASM_STRIP_PINGUSER
         case SID_GETINVOLVED:
         {
             // Open get involved/join us page based on locales
@@ -532,6 +535,7 @@ void SfxApplication::MiscExec_Impl( SfxRequest& rReq )
             sfx2::openUriExternally(sURL, false);
             break;
         }
+#endif
         case SID_SHOW_LICENSE:
         {
             LicenseDialog aDialog(rReq.GetFrameWeld());
@@ -607,6 +611,7 @@ void SfxApplication::MiscExec_Impl( SfxRequest& rReq )
             break;
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef ENABLE_WASM_STRIP_PINGUSER
         case SID_TIPOFTHEDAY:
         {
             SfxAbstractDialogFactory* pFact = SfxAbstractDialogFactory::Create();
@@ -615,6 +620,7 @@ void SfxApplication::MiscExec_Impl( SfxRequest& rReq )
             bDone = true;
             break;
         }
+#endif
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         case SID_ABOUT:
