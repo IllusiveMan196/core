@@ -2382,6 +2382,10 @@ AC_ARG_WITH(system-liblangtag,
         [Use liblangtag library already on system.]),,
     [with_system_liblangtag="$with_system_libs"])
 
+AC_ARG_WITH(system-lockfile,
+    AS_HELP_STRING([--with-system-lockfile[=file]],
+        [Detect a system lockfile program or use the \$file argument.]))
+
 AC_ARG_WITH(webdav,
     AS_HELP_STRING([--with-webdav],
         [Specify which library to use for webdav implementation.
@@ -5429,6 +5433,7 @@ if test "$cross_compiling" = "yes"; then
         config_host/*.in \
         sysui/desktop/macosx/Info.plist.in \
         .vscode/vs-code-template.code-workspace.in \
+        solenv/lockfile/autoconf.h.in \
         ) \
     | (cd CONF-FOR-BUILD && tar xf -)
     cp configure CONF-FOR-BUILD
@@ -5476,6 +5481,7 @@ if test "$cross_compiling" = "yes"; then
     test "$with_system_icu_for_build" = "yes" -o "$with_system_icu_for_build" = "force" && sub_conf_opts="$sub_conf_opts --with-system-icu"
     test "$with_galleries" = "no" -o -z "$WITH_GALLERY_BUILD" && sub_conf_opts="$sub_conf_opts --with-galleries=no --disable-database-connectivity"
     test "$enable_wasm_strip" = "yes" && sub_conf_opts="$sub_conf_opts --enable-wasm-strip"
+    test "${with_system_lockfile+set}" = set && sub_conf_opts="$sub_conf_opts --with-system-lockfile=${with_system_lockfile}"
     sub_conf_opts="$sub_conf_opts $with_build_platform_configure_options"
 
     # Don't bother having configure look for stuff not needed for the build platform anyway
@@ -5587,6 +5593,7 @@ if test "$cross_compiling" = "yes"; then
         JAVACOMPILER
         JAVADOC
         JAVADOCISGJDOC
+        LOCKFILE
 "
     # these need some special handling
     EXTRA_HANDLED_SETTINGS="
@@ -5668,6 +5675,40 @@ AC_SUBST(WORKDIR_FOR_BUILD)
 AC_SUBST(CC_FOR_BUILD)
 AC_SUBST(CXX_FOR_BUILD)
 AC_SUBST(CPPU_ENV_FOR_BUILD)
+
+dnl ===================================================================
+dnl Check for lockfile deps
+dnl ===================================================================
+if test -z "$CROSS_COMPILING"; then
+    test -n "$LOCKFILE" -a "${with_system_lockfile+set}" != set && with_system_lockfile="$LOCKFILE"
+    test "${with_system_lockfile+set}" = set || with_system_lockfile=no
+    AC_MSG_CHECKING([whick lockfile binary to use])
+    case "$with_system_lockfile" in
+    yes)
+        AC_MSG_RESULT([external])
+        AC_PATH_PROGS([LOCKFILE],[dotlockfile lockfile])
+        ;;
+    no)
+        AC_MSG_RESULT([internal])
+        ;;
+    *)
+        if test -x "$with_system_lockfile"; then
+            LOCKFILE="$with_system_lockfile"
+        else
+            AC_MSG_ERROR(['$with_system_lockfile' is not executable.])
+        fi
+        AC_MSG_RESULT([$with_system_lockfile])
+        ;;
+    esac
+fi
+
+if test -n "$LOCKFILE" -a "$DISABLE_DYNLOADING" = TRUE; then
+    add_warning "The default system lockfile has increasing poll intervals up to 60s, so linking executables may be delayed."
+fi
+
+AC_CHECK_HEADERS([getopt.h paths.h sys/param.h])
+AC_CHECK_FUNCS([utime utimes])
+AC_SUBST(LOCKFILE)
 
 dnl ===================================================================
 dnl Check for syslog header
@@ -14358,6 +14399,7 @@ AC_CONFIG_HEADERS([config_host/config_oauth2.h])
 AC_CONFIG_HEADERS([config_host/config_poppler.h])
 AC_CONFIG_HEADERS([config_host/config_python.h])
 AC_CONFIG_HEADERS([config_host/config_writerperfect.h])
+AC_CONFIG_HEADERS([solenv/lockfile/autoconf.h])
 AC_OUTPUT
 
 if test "$CROSS_COMPILING" = TRUE; then
