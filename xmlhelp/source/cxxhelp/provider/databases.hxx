@@ -29,6 +29,7 @@
 #include <osl/mutex.hxx>
 #include <rtl/ustring.hxx>
 #include <rtl/string.hxx>
+#include <rtl/strbuf.hxx>
 #include <com/sun/star/uno/Sequence.hxx>
 #include <com/sun/star/container/XHierarchicalNameAccess.hpp>
 #include <com/sun/star/lang/XMultiComponentFactory.hpp>

@@ -36,7 +36,7 @@ void test::BootstrapFixtureBase::setUp()
 void test::BootstrapFixtureBase::tearDown()
 {
 #if HAVE_FEATURE_SCRIPTING
-    StarBASIC::DetachAllDocBasicItems()
+    StarBASIC::DetachAllDocBasicItems();
 #endif
 }
 
