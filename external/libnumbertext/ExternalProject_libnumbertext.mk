@@ -16,7 +16,7 @@ $(eval $(call gb_ExternalProject_register_targets,libnumbertext,\
 	build \
 ))
 
-libnumbertext_CXXFLAGS=$(CXXFLAGS) $(CXXFLAGS_CXX11)
+libnumbertext_CXXFLAGS=$(CXXFLAGS) $(CXXFLAGS_CXX11) $(gb_EMSCRIPTEN_CPPFLAGS)
 
 ifneq (,$(filter ANDROID DRAGONFLY FREEBSD iOS LINUX NETBSD OPENBSD,$(OS)))
 ifneq (,$(gb_ENABLE_DBGUTIL))
